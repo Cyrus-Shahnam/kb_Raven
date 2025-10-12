@@ -1,0 +1,35 @@
+# kb_raven/ui/narrative/methods/run_raven_assembler/display.yaml
+name: Raven long-read assembler
+tooltip: Assemble ONT/PacBio long reads using Raven
+screenshots: []
+icon: assembly
+parameters:
+  - id: workspace_name
+    ui-name: Output workspace
+    short-hint: Workspace to save the assembly and report
+  - id: reads_refs
+    ui-name: Long-read libraries
+    short-hint: One or more SingleEnd long-read libraries (ONT/PacBio)
+  - id: assembly_name
+    ui-name: Assembly object name
+    short-hint: Name for the output Assembly object
+parameter-groups:
+  - ui-name: Advanced options
+    short-hint: Optional Raven tuning flags
+    parameter-ids:
+      - threads
+      - polishing_rounds
+      - identity
+      - frequency
+      - min_unitig_size
+      - save_gfa
+description:
+  short: |
+    Raven is a fast, memory-efficient assembler for long uncorrected reads.
+  long: |
+    This app wraps the **raven** executable to assemble ONT/PacBio long reads
+    into contigs. It saves a KBase Assembly object and a brief QC report.
+publications:
+  - pmid: ""
+    display-text: "Time- and memory-efficient genome assembly with Raven (Nat. Comput. Sci., 2021)"
+    link: "https://www.nature.com/articles/s43588-021-00073-4"

@@ -1,0 +1,110 @@
+{
+  "methods": {
+    "kb_raven.run_raven_assembler": {
+      "name": "Raven long-read assembler",
+      "subtitle": "Assemble ONT/PacBio long reads with Raven",
+      "tooltip": "Runs the Raven assembler and saves a KBase Assembly object",
+      "technical_description": "Wraps the raven executable. Input: one or more SingleEnd long-read libraries (FASTQ/FASTA, gz ok). Output: contigs FASTA saved as an Assembly object; optional GFA graph.",
+      "integration": "kb_raven",
+      "ver": "0.0.1",
+      "authors": ["you"],
+      "contact": "you@example.org",
+      "parameters": [
+        {
+          "id": "workspace_name",
+          "optional": false,
+          "advanced": false,
+          "allow_multiple": false,
+          "field_type": "text",
+          "text_options": {
+            "tooltip": "Workspace to save outputs in"
+          }
+        },
+        {
+          "id": "reads_refs",
+          "optional": false,
+          "advanced": false,
+          "is_workspace_ref": true,
+          "allow_multiple": true,
+          "valid_ws_types": ["KBaseFile.SingleEndLibrary", "KBaseReads.SingleEndLibrary"],
+          "field_type": "textSubdata",
+          "text_options": {
+            "valid_ws_types": ["KBaseFile.SingleEndLibrary", "KBaseReads.SingleEndLibrary"],
+            "multiselection": true
+          }
+        },
+        {
+          "id": "assembly_name",
+          "optional": true,
+          "advanced": false,
+          "field_type": "text",
+          "text_options": {
+            "default_values": ["Raven.Assembly"]
+          }
+        },
+        {
+          "id": "threads",
+          "optional": true,
+          "advanced": true,
+          "field_type": "text",
+          "text_options": { "default_values": ["4"] }
+        },
+        {
+          "id": "polishing_rounds",
+          "optional": true,
+          "advanced": true,
+          "field_type": "text",
+          "text_options": { "default_values": ["2"] }
+        },
+        {
+          "id": "identity",
+          "optional": true,
+          "advanced": true,
+          "field_type": "text",
+          "text_options": { "default_values": ["0"] }
+        },
+        {
+          "id": "frequency",
+          "optional": true,
+          "advanced": true,
+          "field_type": "text",
+          "text_options": { "default_values": ["0.001"] }
+        },
+        {
+          "id": "min_unitig_size",
+          "optional": true,
+          "advanced": true,
+          "field_type": "text",
+          "text_options": { "default_values": ["9999"] }
+        },
+        {
+          "id": "save_gfa",
+          "optional": true,
+          "advanced": true,
+          "field_type": "checkbox",
+          "checkbox_options": { "default_value": false }
+        }
+      ],
+      "icon": "assembly",
+      "behavior": {
+        "service-mapping": {
+          "url": "",
+          "name": "kb_raven",
+          "method": "run_raven_assembler",
+          "input_mapping": [
+            { "narrative_path": "workspace_name",  "method_parameter": "workspace_name" },
+            { "narrative_path": "reads_refs",      "method_parameter": "reads_refs" },
+            { "narrative_path": "threads",         "method_parameter": "threads" },
+            { "narrative_path": "polishing_rounds","method_parameter": "polishing_rounds" },
+            { "narrative_path": "identity",        "method_parameter": "identity" },
+            { "narrative_path": "frequency",       "method_parameter": "frequency" },
+            { "narrative_path": "min_unitig_size", "method_parameter": "min_unitig_size" },
+            { "narrative_path": "save_gfa",        "method_parameter": "save_gfa" },
+            { "narrative_path": "assembly_name",   "method_parameter": "assembly_name" }
+          ],
+          "output_mapping": []
+        }
+      }
+    }
+  }
+}
