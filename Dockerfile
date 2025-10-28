@@ -1,5 +1,7 @@
 # kb_raven/Dockerfile
-FROM kbase/sdkbase2:latest
+FROM kbase/sdkpython:3.8.10
+LABEL maintainer="ac.shahnam"
+
 
 # System deps to build raven
 RUN apt-get update && apt-get install -y --no-install-recommends \

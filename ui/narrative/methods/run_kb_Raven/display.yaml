@@ -4,9 +4,6 @@ icon: assembly
 screenshots: []
 
 parameters:
-  - id: workspace_name
-    ui-name: Output workspace
-    short-hint: Workspace to save the assembly and report
   - id: reads_refs
     ui-name: Long-read libraries
     short-hint: One or more SingleEnd long-read libraries (ONT/PacBio)
@@ -30,6 +27,7 @@ description:
   long: |
     This app wraps the **raven** executable to assemble ONT/PacBio long reads
     into contigs. It saves a KBase Assembly object and a brief QC report.
+
 publications:
   - display-text: "Time- and memory-efficient genome assembly with Raven (2021)"
     link: "https://www.nature.com/articles/s43588-021-00073-4"

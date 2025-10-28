@@ -90,12 +90,15 @@ class kb_raven:
         if not reads_refs:
             raise ValueError("At least one reads reference is required")
 
-        threads = int(params.get('threads', 4))
-        polishing = int(params.get('polishing_rounds', 2))
-        identity = float(params.get('identity', 0.0))
-        frequency = float(params.get('frequency', 0.001))
+        threads = int(params.get('threads', 4) or 4)
+        polishing = int(params.get('polishing_rounds', 2) or 2)
+        identity = float(params.get('identity', 0) or 0)
+        frequency = float(params.get('frequency', 0.001) or 0.001)
+        min_unitig = int(params.get('min_unitig_size', 9999) or 9999)
+
+        sg = str(params.get('save_gfa', '0')).strip().lower()
+        save_gfa = sg in ('1', 'true', 'yes')
         min_unitig = int(params.get('min_unitig_size', 9999))
-        save_gfa = bool(params.get('save_gfa', False))
         asm_name = params.get('assembly_name') or 'Raven.Assembly'
 
         ru = ReadsUtils(self.callback_url)

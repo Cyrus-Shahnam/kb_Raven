@@ -1,21 +1,11 @@
 {
-  "ver": "1.0.0",
+  "ver": "1.1",
   "authors": ["ac.shahnam"],
-  "contact": "ac.shahnam@example.org",
-
+  "contact": "ac.shahnam@ornl.org",
   "categories": ["active", "assembly"],
-
   "widgets": { "input": null, "output": null },
 
   "parameters": [
-    {
-      "id": "workspace_name",
-      "optional": false,
-      "advanced": false,
-      "allow_multiple": false,
-      "field_type": "text",
-      "default_values": ""
-    },
     {
       "id": "reads_refs",
       "optional": false,
@@ -27,7 +17,8 @@
           "KBaseFile.SingleEndLibrary",
           "KBaseReads.SingleEndLibrary"
         ]
-      }
+      },
+      "default_values": []
     },
     {
       "id": "assembly_name",
@@ -35,17 +26,16 @@
       "advanced": false,
       "allow_multiple": false,
       "field_type": "text",
-      "default_values": "Raven.Assembly",
-      "text_options": { "is_output_name": true }
+      "text_options": { "is_output_name": true },
+      "default_values": ["Raven.Assembly"]
     },
-
     {
       "id": "threads",
       "optional": true,
       "advanced": true,
       "allow_multiple": false,
+      "default_values": ["4"],
       "field_type": "text",
-      "default_values": "4",
       "text_options": { "validate_as": "int", "min_int": 1 }
     },
     {
@@ -53,8 +43,8 @@
       "optional": true,
       "advanced": true,
       "allow_multiple": false,
+      "default_values": ["2"],
       "field_type": "text",
-      "default_values": "2",
       "text_options": { "validate_as": "int", "min_int": 0 }
     },
     {
@@ -62,8 +52,8 @@
       "optional": true,
       "advanced": true,
       "allow_multiple": false,
+      "default_values": ["0"],
       "field_type": "text",
-      "default_values": "0",
       "text_options": { "validate_as": "float", "min_float": 0 }
     },
     {
@@ -71,8 +61,8 @@
       "optional": true,
       "advanced": true,
       "allow_multiple": false,
+      "default_values": ["0.001"],
       "field_type": "text",
-      "default_values": "0.001",
       "text_options": { "validate_as": "float", "min_float": 0 }
     },
     {
@@ -80,8 +70,8 @@
       "optional": true,
       "advanced": true,
       "allow_multiple": false,
+      "default_values": ["9999"],
       "field_type": "text",
-      "default_values": "9999",
       "text_options": { "validate_as": "int", "min_int": 0 }
     },
     {
@@ -89,6 +79,7 @@
       "optional": true,
       "advanced": true,
       "allow_multiple": false,
+      "default_values": ["1"],
       "field_type": "checkbox",
       "checkbox_options": { "checked_value": "1", "unchecked_value": "0" }
     }
@@ -99,19 +90,22 @@
       "url": "",
       "name": "kb_raven",
       "method": "run_raven_assembler",
-
       "input_mapping": [
-        { "input_parameter": "workspace_name",
-          "target_argument_position": 0,
-          "target_property": "workspace_name" },
+        { "narrative_system_variable": "workspace", "target_property": "workspace_name", "target_argument_position": 0 },
 
-        { "input_parameter": "reads_refs",
-          "target_argument_position": 0,
-          "target_property": "reads_refs",
-          "target_type_transform": "list<ref>" },
+        { "input_parameter": "reads_refs",       "target_property": "reads_refs",       "target_argument_position": 0, "target_type_transform": "list<ref>" },
+        { "input_parameter": "assembly_name",    "target_property": "assembly_name",    "target_argument_position": 0 },
 
-        { "input_parameter": "assembly_name",
-          "target_argument_position": 0,
-          "target_property": "assembly_name" },
+        { "input_parameter": "threads",          "target_property": "threads",          "target_argument_position": 0, "target_type_transform": "int" },
+        { "input_parameter": "polishing_rounds", "target_property": "polishing_rounds", "target_argument_position": 0, "target_type_transform": "int" },
+        { "input_parameter": "identity",         "target_property": "identity",         "target_argument_position": 0, "target_type_transform": "float" },
+        { "input_parameter": "frequency",        "target_property": "frequency",        "target_argument_position": 0, "target_type_transform": "float" },
+        { "input_parameter": "min_unitig_size",  "target_property": "min_unitig_size",  "target_argument_position": 0, "target_type_transform": "int" },
+        { "input_parameter": "save_gfa",         "target_property": "save_gfa",         "target_argument_position": 0, "target_type_transform": "int" }
+      ],
+      "output_mapping": []
+    }
+  },
 
-        { "input_parameter": "t_
+  "job_id_output_field": "docker"
+}
