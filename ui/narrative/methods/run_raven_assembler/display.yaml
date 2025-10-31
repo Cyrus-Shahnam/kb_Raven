@@ -1,33 +1,22 @@
 name: Raven long-read assembler
-tooltip: Assemble ONT/PacBio long reads using Raven
+tooltip: Assemble ONT/PacBio long reads with Raven and save a KBase report
 icon: assembly
 screenshots: []
 
+description:
+  short: Assemble long reads into contigs with Raven and produce a simple KBase report.
+  long: This app wraps the Raven executable to assemble Oxford Nanopore or PacBio long reads into contigs. Optionally, it saves a GFA graph for downstream visualization.
+
 parameters:
   - id: reads_refs
-    ui-name: Long-read libraries
-    short-hint: One or more SingleEnd long-read libraries (ONT/PacBio)
+    ui-name: Long-read libraries (ONT/PacBio)
+    short-hint: Select one or more SingleEnd long-read libraries (FASTQ/FASTA; gz ok)
   - id: assembly_name
     ui-name: Assembly object name
-    short-hint: Name for the output Assembly object
-
-parameter-groups:
-  - ui-name: Advanced options
-    short-hint: Optional Raven tuning flags
-    parameter-ids:
-      - threads
-      - polishing_rounds
-      - identity
-      - frequency
-      - min_unitig_size
-      - save_gfa
-
-description:
-  short: Assemble long reads into contigs with Raven, saving a KBase Assembly and HTML report.
-  long: |
-    This app wraps the **raven** executable to assemble ONT/PacBio long reads
-    into contigs. It saves a KBase Assembly object and a brief QC report.
-
-publications:
-  - display-text: "Time- and memory-efficient genome assembly with Raven (2021)"
-    link: "https://www.nature.com/articles/s43588-021-00073-4"
+    short-hint: Name for the saved Assembly (e.g., Raven.Assembly)
+  - id: threads
+    ui-name: Threads
+    short-hint: CPU threads for Raven (-t)
+  - id: save_gfa
+    ui-name: Save assembly graph (GFA)
+    short-hint: Also export the assembly graph (*.gfa)

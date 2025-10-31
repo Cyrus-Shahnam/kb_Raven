@@ -1,9 +1,9 @@
 {
-  "ver": "1.1",
+  "ver": "0.0.1",
   "authors": ["ac.shahnam"],
-  "contact": "ac.shahnam@ornl.org",
-  "categories": ["active", "assembly"],
-  "widgets": { "input": null, "output": null },
+  "contact": "",
+  "categories": ["active"],
+  "widgets": { "input": null, "output": "kbaseReportView" },
 
   "parameters": [
     {
@@ -11,23 +11,22 @@
       "optional": false,
       "advanced": false,
       "allow_multiple": true,
+      "default_values": [],
       "field_type": "text",
       "text_options": {
         "valid_ws_types": [
           "KBaseFile.SingleEndLibrary",
           "KBaseReads.SingleEndLibrary"
         ]
-      },
-      "default_values": []
+      }
     },
     {
       "id": "assembly_name",
       "optional": true,
       "advanced": false,
       "allow_multiple": false,
-      "field_type": "text",
-      "text_options": { "is_output_name": true },
-      "default_values": ["Raven.Assembly"]
+      "default_values": ["Raven.Assembly"],
+      "field_type": "text"
     },
     {
       "id": "threads",
@@ -35,51 +34,14 @@
       "advanced": true,
       "allow_multiple": false,
       "default_values": ["4"],
-      "field_type": "text",
-      "text_options": { "validate_as": "int", "min_int": 1 }
-    },
-    {
-      "id": "polishing_rounds",
-      "optional": true,
-      "advanced": true,
-      "allow_multiple": false,
-      "default_values": ["2"],
-      "field_type": "text",
-      "text_options": { "validate_as": "int", "min_int": 0 }
-    },
-    {
-      "id": "identity",
-      "optional": true,
-      "advanced": true,
-      "allow_multiple": false,
-      "default_values": ["0"],
-      "field_type": "text",
-      "text_options": { "validate_as": "float", "min_float": 0 }
-    },
-    {
-      "id": "frequency",
-      "optional": true,
-      "advanced": true,
-      "allow_multiple": false,
-      "default_values": ["0.001"],
-      "field_type": "text",
-      "text_options": { "validate_as": "float", "min_float": 0 }
-    },
-    {
-      "id": "min_unitig_size",
-      "optional": true,
-      "advanced": true,
-      "allow_multiple": false,
-      "default_values": ["9999"],
-      "field_type": "text",
-      "text_options": { "validate_as": "int", "min_int": 0 }
+      "field_type": "text"
     },
     {
       "id": "save_gfa",
       "optional": true,
       "advanced": true,
       "allow_multiple": false,
-      "default_values": ["1"],
+      "default_values": ["0"],
       "field_type": "checkbox",
       "checkbox_options": { "checked_value": "1", "unchecked_value": "0" }
     }
@@ -91,19 +53,18 @@
       "name": "kb_raven",
       "method": "run_raven_assembler",
       "input_mapping": [
-        { "narrative_system_variable": "workspace", "target_property": "workspace_name", "target_argument_position": 0 },
+        { "narrative_system_variable": "workspace",    "target_property": "workspace_name", "target_argument_position": 0 },
+        { "narrative_system_variable": "workspace_id", "target_property": "workspace_id",   "target_argument_position": 0 },
 
-        { "input_parameter": "reads_refs",       "target_property": "reads_refs",       "target_argument_position": 0, "target_type_transform": "list<ref>" },
-        { "input_parameter": "assembly_name",    "target_property": "assembly_name",    "target_argument_position": 0 },
-
-        { "input_parameter": "threads",          "target_property": "threads",          "target_argument_position": 0, "target_type_transform": "int" },
-        { "input_parameter": "polishing_rounds", "target_property": "polishing_rounds", "target_argument_position": 0, "target_type_transform": "int" },
-        { "input_parameter": "identity",         "target_property": "identity",         "target_argument_position": 0, "target_type_transform": "float" },
-        { "input_parameter": "frequency",        "target_property": "frequency",        "target_argument_position": 0, "target_type_transform": "float" },
-        { "input_parameter": "min_unitig_size",  "target_property": "min_unitig_size",  "target_argument_position": 0, "target_type_transform": "int" },
-        { "input_parameter": "save_gfa",         "target_property": "save_gfa",         "target_argument_position": 0, "target_type_transform": "int" }
+        { "input_parameter": "reads_refs",    "target_property": "reads_refs",    "target_argument_position": 0, "target_type_transform": "list<ref>" },
+        { "input_parameter": "assembly_name", "target_property": "assembly_name", "target_argument_position": 0 },
+        { "input_parameter": "threads",       "target_property": "threads",       "target_argument_position": 0, "target_type_transform": "int" },
+        { "input_parameter": "save_gfa",      "target_property": "save_gfa",      "target_argument_position": 0, "target_type_transform": "int" }
       ],
-      "output_mapping": []
+      "output_mapping": [
+        { "service_method_output_path": [0, "report_name"], "target_property": "report_name" },
+        { "service_method_output_path": [0, "report_ref"],  "target_property": "report_ref"  }
+      ]
     }
   },
 
