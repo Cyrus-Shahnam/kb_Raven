@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "module_name": "kb_raven",
+  "status": "ok",
+  "details": {
+    "spec_file": "kb_raven.spec",
+    "service_language": "python",
+    "impl": "kb_raven.kb_ravenImpl",
+    "server": "kb_raven.kb_ravenServer"
+  }
+}
