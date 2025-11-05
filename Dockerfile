@@ -19,27 +19,21 @@ RUN git clone --branch ${RAVEN_TAG} --depth 1 https://github.com/lbcb-sci/raven 
     cmake --install /opt/raven/build && \
     ln -sf /usr/local/bin/raven /usr/bin/raven
 
-# Ensure kbmodule exists
+# Ensure kbmodule exists and owns /kb/module (fine to keep this)
 RUN if ! id -u kbmodule >/dev/null 2>&1; then \
       useradd -m -s /bin/bash -U kbmodule; \
-    fi
-
-# ---- Bring in module code ---------------------------------------------------
-# Copy your module into the image (as root)
-COPY ./ /kb/module
-
-# Writable work dir + sane ownership & perms for kbmodule
-RUN mkdir -p /kb/module/work && \
+    fi && \
+    mkdir -p /kb/module/work && \
     chown -R kbmodule:kbmodule /kb/module && \
     chmod -R a+rwX /kb/module
 
-# Build method assets inside the image
 WORKDIR /kb/module
 
-# Switch to the runtime user before building assets
-USER kbmodule
+# Build method assets (root is fine)
 RUN make all
 
-# ---- Runtime ---------------------------------------------------------------
+# IMPORTANT: run container as root so the Catalog's report step can write ./work
+# We'll drop to kbmodule for normal server/async inside entrypoint.sh
+# (So: do NOT set USER kbmodule here.)
 ENTRYPOINT ["./scripts/entrypoint.sh"]
 CMD []
