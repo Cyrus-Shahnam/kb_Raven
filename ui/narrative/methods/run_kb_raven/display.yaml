@@ -1,0 +1,78 @@
+name: "Raven: de novo long-read assembler"
+tooltip: "Assemble long uncorrected reads with Raven (ONT/PacBio)."
+screenshots: []
+# Omit icon unless you add a file in ./img and reference it by filename, e.g. "raven.png"
+# icon: raven.png
+
+parameters:
+  read_libraries:
+    ui-name: "Input long-read libraries"
+    short-hint: "One or more SingleEndLibrary objects (ONT or PacBio)."
+    long: "Select one or more long-read libraries from your workspace. Raven accepts FASTA/FASTQ (gz OK)."
+
+  assembly_name:
+    ui-name: "Output assembly object name"
+    short-hint: "Name for the saved Assembly object."
+    long: "Assembly will be saved as a KBase Assembly; name must be unique in the target workspace."
+
+  threads:
+    ui-name: "Threads (-t)"
+    short-hint: "CPU threads to use (default 8)."
+    long: "Raven CLI: -t, number of threads."
+
+  polishing_rounds:
+    ui-name: "Polishing rounds (-p)"
+    short-hint: "Racon polishing rounds (default 2)."
+    long: "Raven CLI: -p, number of times racon is invoked."
+
+  kmer_len:
+    ui-name: "Minimizer k-mer length (-k)"
+    short-hint: "Default 15."
+    long: "Raven CLI: -k, length of minimizers used to find overlaps."
+
+  window_len:
+    ui-name: "Minimizer window length (-w)"
+    short-hint: "Default 5."
+    long: "Raven CLI: -w, window length for minimizer sampling."
+
+  frequency:
+    ui-name: "Ignore high-frequency minimizers (-f)"
+    short-hint: "Default 0.001."
+    long: "Raven CLI: -f, threshold for ignoring most frequent minimizers."
+
+  identity:
+    ui-name: "Overlap identity threshold (-i)"
+    short-hint: "Default 0 (disabled)."
+    long: "Raven CLI: -i, minimum overlap identity to connect reads."
+
+  max_num_overlaps:
+    ui-name: "Max overlaps per read (-o)"
+    short-hint: "Default 32."
+    long: "Raven CLI: -o, limit overlaps in pile construction."
+
+  min_unitig_size:
+    ui-name: "Minimum unitig size (-u)"
+    short-hint: "Default 9999."
+    long: "Raven CLI: -u, minimal unitig size."
+
+  write_gfa:
+    ui-name: "Export GFA"
+    short-hint: "Write assembly graph (GFA) in the report."
+    long: "Raven CLI: --graphical-fragment-assembly <file>."
+
+  resume:
+    ui-name: "Resume run"
+    short-hint: "Resume from last checkpoint if available."
+    long: "Raven CLI: --resume."
+
+description: |
+  Raven is a de novo assembler optimized for long uncorrected reads (ONT / PacBio).
+  It prints contigs to stdout (FASTA) and can optionally emit a GFA graph.
+  
+  This app wraps Raven with common flags and saves:
+    • A KBase Assembly object (FASTA)
+    • (Optional) the GFA in the report
+
+publications:
+  - display-text: "Raven assembler (tool homepage)"
+    link: "https://github.com/lbcb-sci/raven"
