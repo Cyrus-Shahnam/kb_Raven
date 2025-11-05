@@ -3,8 +3,10 @@ import shutil
 import tempfile
 import unittest
 
-from lib.kb_raven.kb_ravenImpl import kb_raven
-
+from kb_raven.kb_ravenImpl import kb_raven
+from installed_clients.ReadsUtilsClient import ReadsUtils
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.WorkspaceClient import Workspace
 
 class _StubReadsUtils:
     def __init__(self, *a, **k):

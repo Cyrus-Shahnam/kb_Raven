@@ -3,6 +3,7 @@
 . /kb/deployment/user-env.sh
 
 python ./scripts/prepare_deploy_cfg.py ./deploy.cfg ./work/config.properties
+export PYTHONPATH="/kb/module/lib:${PYTHONPATH}"
 
 if [ -f ./work/token ] ; then
   export KB_AUTH_TOKEN=$(<./work/token)
