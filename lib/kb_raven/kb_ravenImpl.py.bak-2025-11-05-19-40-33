@@ -21,24 +21,12 @@ class kb_raven:
     kb_raven
 
     Module Description:
-    
+    Raven long-read assembler for KBase
     '''
-
-    ######## WARNING FOR GEVENT USERS ####### noqa
-    # Since asynchronous IO can lead to methods - even the same method -
-    # interrupting each other, you must be *very* careful when using global
-    # state. A method could easily clobber the state set by another while
-    # the latter method is running.
-    ######################################### noqa
-    VERSION = "0.0.1"
-    GIT_URL = "https://github.com/Cyrus-Shahnam/kb_Raven.git"
-    GIT_COMMIT_HASH = "9a7ce84b87cb7b5bfd50e20c73c9a39d2064e789"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
 
-    # config contains contents of config file in a hash or None if it couldn't
-    # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
         self.callback_url = os.environ.get('SDK_CALLBACK_URL')
@@ -50,25 +38,10 @@ class kb_raven:
         #END_CONSTRUCTOR
         pass
 
-
     def run_kb_raven(self, ctx, params):
         """
-        :param params: instance of type "RavenParams" -> structure: parameter
-           "workspace_name" of type "workspace_name", parameter
-           "read_libraries" of list of type "data_obj_ref", parameter
-           "assembly_name" of type "data_obj_name", parameter "threads" of
-           Long, parameter "kmer_len" of Long, parameter "window_len" of
-           Long, parameter "frequency" of Double, parameter "identity" of
-           Double, parameter "max_num_overlaps" of Long, parameter
-           "polishing_rounds" of Long, parameter "min_unitig_size" of Long,
-           parameter "write_gfa" of Long, parameter "resume" of Long
-        :returns: instance of type "RavenResult" -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String,
-           parameter "assembly_ref" of String, parameter "gfa_shock_id" of
-           String
+        Run Raven on long-read libraries and save a KBase Assembly.
         """
-        # ctx is the context object
-        # return variables are: result
         #BEGIN run_kb_raven
         ws_name = params['workspace_name']
         reads_refs = params['read_libraries']
@@ -160,18 +133,15 @@ class kb_raven:
         }]
         #END run_kb_raven
 
-        # At some point might do deeper type checking...
-        if not isinstance(result, dict):
-            raise ValueError('Method run_kb_raven return value ' +
-                             'result is not type dict as required.')
-        # return the results
-        return [result]
-    def status(self, ctx):
-        #BEGIN_STATUS
-        returnVal = {'state': "OK",
-                     'message': "",
-                     'version': self.VERSION,
-                     'git_url': self.GIT_URL,
-                     'git_commit_hash': self.GIT_COMMIT_HASH}
-        #END_STATUS
-        return [returnVal]
+    #BEGIN _run_cmd
+    def _run_cmd(self, cmdline: str, cwd: str = None):
+        proc = subprocess.run(
+            cmdline, shell=True, cwd=cwd,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+        if proc.returncode != 0:
+            raise RuntimeError(
+                f"Command failed ({proc.returncode}):\n{cmdline}\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
+            )
+        return proc
+    #END _run_cmd

@@ -1,20 +1,22 @@
 #!/bin/bash
-set -euo pipefail
-export PYTHONPATH="/kb/module/lib:${PYTHONPATH}"
+set -eo pipefail
+# tolerate unset PYTHONPATH
+export PYTHONPATH="/kb/module/lib:${PYTHONPATH:-}"
 
 cmd="${1:-start}"
 shift || true
 
 case "$cmd" in
   report)
-    # The Catalog mounts ./work; just drop the prebuilt report there.
+    # Catalog's compile-report step: just drop the prebuilt report in ./work
     if [ ! -f ci/compile_report.json ]; then
-      echo "ERROR: ci/compile_report.json missing; run 'kb-sdk compile' locally and commit it." 1>&2
-      exit 1
+      echo "ERROR: ci/compile_report.json missing. Run 'kb-sdk compile' locally and commit it." >&2
+      exit 2
     fi
     mkdir -p work
-    cp ci/compile_report.json work/compile_report.json
-    echo "Wrote work/compile_report.json from prebuilt ci/compile_report.json"
+    cp -f ci/compile_report.json work/compile_report.json
+    echo "Wrote work/compile_report.json from ci/compile_report.json"
+    exit 0
     ;;
 
   start)
@@ -23,7 +25,7 @@ case "$cmd" in
     ;;
 
   async)
-    # Run async job wrapper as kbmodule
+    # Async job wrapper as kbmodule
     exec su -s /bin/bash -c "./bin/run_kb_raven_async_job.sh $*" kbmodule
     ;;
 
