@@ -1,5 +1,5 @@
 FROM kbase/sdkpython:3.8.10
-LABEL maintainer="you@example.com"
+LABEL maintainer="sv1@ornl.gov"
 ENV DEBIAN_FRONTEND=noninteractive
 
 USER root
