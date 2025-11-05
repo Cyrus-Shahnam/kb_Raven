@@ -30,6 +30,8 @@ deps:
 	fi
 
 compile:
+	mkdir -p work
+	chmod -R a+rwX work
 	KB_SDK_LOCAL_TEST=1 kb-sdk compile $(SPEC_FILE) \
 		--out $(LIB_DIR) \
 		--pysrvname $(SERVICE_CAPS).$(SERVICE_CAPS)Server \

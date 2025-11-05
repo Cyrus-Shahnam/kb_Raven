@@ -31,7 +31,7 @@ COPY ./ /kb/module
 # Writable work dir + sane ownership & perms for kbmodule
 RUN mkdir -p /kb/module/work && \
     chown -R kbmodule:kbmodule /kb/module && \
-    chmod -R a+rw /kb/module
+    chmod -R a+rwX /kb/module
 
 # Build method assets inside the image
 WORKDIR /kb/module
