@@ -39,15 +39,22 @@ class kb_raven:
 
     # config contains contents of config file in a hash or None if it couldn't
     # be found
+    #BEGIN_CONSTRUCTOR
     def __init__(self, config):
-        #BEGIN_CONSTRUCTOR
+        # tolerate missing config (e.g., if KB_DEPLOYMENT_CONFIG isn't set)
+        cfg = config or {}
         self.callback_url = os.environ.get('SDK_CALLBACK_URL')
-        self.scratch = os.path.abspath(config['scratch'])
+
+        scratch = cfg.get('scratch') or os.environ.get('KB_SCRATCH') or '/kb/module/work'
+        os.makedirs(scratch, exist_ok=True)
+        self.scratch = os.path.abspath(scratch)
+
         self.ru = ReadsUtils(self.callback_url)
         self.au = AssemblyUtil(self.callback_url)
         self.dfu = DataFileUtil(self.callback_url)
         self.kbr = KBaseReport(self.callback_url)
-        #END_CONSTRUCTOR
+    #END_CONSTRUCTOR
+
         pass
 
 

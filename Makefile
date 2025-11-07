@@ -40,13 +40,21 @@ build:
 
 build-executable-script:
 	mkdir -p $(LBIN_DIR)
-	echo '#!/usr/bin/env bash' > $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	echo 'set -euo pipefail' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	echo 'script_dir=$$(dirname "$$(readlink -f "$$0")")' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	echo 'export PATH="/opt/conda3/bin:$${PATH:-}"' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	echo 'export PYTHONPATH="$$script_dir/../$(LIB_DIR):$${PYTHONPATH:-}"' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	echo 'exec /opt/conda3/bin/python -u "$$script_dir/../$(LIB_DIR)/$(SERVICE_CAPS)/$(SERVICE_CAPS)Server.py" "$$@"' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	chmod +x $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+	@cat > $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME) <<'BASH'
+    #!/usr/bin/env bash
+    set -euo pipefail
+    script_dir="$(dirname "$(readlink -f "$0")")"
+
+    # env for server + clients
+    export PATH="/opt/conda3/bin:${PATH:-}"
+    export PYTHONPATH="${script_dir}/../lib:${PYTHONPATH:-}"
+    export KB_DEPLOYMENT_CONFIG="${script_dir}/../deploy.cfg"
+
+    # use a definite interpreter – sdkpython base has this path
+    exec /opt/conda3/bin/python -u "${script_dir}/../lib/kb_raven/kb_ravenServer.py" "$@"
+    BASH
+	    chmod +x $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+
 
 
 build-startup-script:
