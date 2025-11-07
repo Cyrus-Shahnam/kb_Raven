@@ -36,10 +36,11 @@ compile:
 
 # just make scripts executable (they're checked into the repo)
 build:
-	chmod +x $(SCRIPTS_DIR)/entrypoint.sh
-	chmod +x $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
-	chmod +x $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	chmod +x $(TEST_DIR)/$(TEST_SCRIPT_NAME)
+	@[ -f $(SCRIPTS_DIR)/entrypoint.sh ] && chmod +x $(SCRIPTS_DIR)/entrypoint.sh || echo "WARN: missing scripts/entrypoint.sh"
+	@[ -f $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME) ] && chmod +x $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME) || echo "WARN: missing scripts/$(STARTUP_SCRIPT_NAME)"
+	@[ -f $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME) ] && chmod +x $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME) || echo "WARN: missing $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)"
+	@[ -f $(TEST_DIR)/$(TEST_SCRIPT_NAME) ] && chmod +x $(TEST_DIR)/$(TEST_SCRIPT_NAME) || echo "WARN: missing $(TEST_DIR)/$(TEST_SCRIPT_NAME)"
+
 
 # alias for Dockerfiles that might call 'make scripts'
 scripts: build
