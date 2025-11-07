@@ -33,10 +33,7 @@ RUN mkdir -p /kb/module/work && \
 WORKDIR /kb/module
 
 # Build only the lightweight assets; DO NOT run kb-sdk compile here
-RUN make build && \
-    make build-startup-script && \
-    make build-executable-script && \
-    make build-test-script
+RUN make build
 
 # Run as root so "report" can write into the mounted ./work
 ENTRYPOINT ["./scripts/entrypoint.sh"]
