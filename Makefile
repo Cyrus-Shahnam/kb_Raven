@@ -40,11 +40,14 @@ build:
 
 build-executable-script:
 	mkdir -p $(LBIN_DIR)
-	echo '#!/bin/bash' > $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+	echo '#!/usr/bin/env bash' > $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+	echo 'set -euo pipefail' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
 	echo 'script_dir=$$(dirname "$$(readlink -f "$$0")")' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	echo 'export PYTHONPATH=$$script_dir/../$(LIB_DIR):$$PYTHONPATH' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-	echo 'python -u $$script_dir/../$(LIB_DIR)/$(SERVICE_CAPS)/$(SERVICE_CAPS)Server.py $$@' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+	echo 'export PATH="/opt/conda3/bin:$${PATH:-}"' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+	echo 'export PYTHONPATH="$$script_dir/../$(LIB_DIR):$${PYTHONPATH:-}"' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+	echo 'exec /opt/conda3/bin/python -u "$$script_dir/../$(LIB_DIR)/$(SERVICE_CAPS)/$(SERVICE_CAPS)Server.py" "$$@"' >> $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
 	chmod +x $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
+
 
 build-startup-script:
 	mkdir -p $(LBIN_DIR)
