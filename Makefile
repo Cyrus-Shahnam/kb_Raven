@@ -38,46 +38,49 @@ compile:
 build:
 	chmod +x $(SCRIPTS_DIR)/entrypoint.sh
 
+build-startup-script:
+	mkdir -p $(SCRIPTS_DIR)
+	@cat > $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME) <<'BASH'
+#!/usr/bin/env bash
+set -euo pipefail
+script_dir="$(dirname "$(readlink -f "$0")")"
+export KB_DEPLOYMENT_CONFIG="${script_dir}/../deploy.cfg"
+export PYTHONPATH="${script_dir}/../lib:${PYTHONPATH:-}"
+exec uwsgi --master --processes 5 --threads 5 --http :5000 \
+  --wsgi-file "${script_dir}/../lib/$(SERVICE_CAPS)/$(SERVICE_CAPS)Server.py"
+BASH
+	chmod +x $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
+
 build-executable-script:
 	mkdir -p $(LBIN_DIR)
 	@cat > $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME) <<'BASH'
-    #!/usr/bin/env bash
-    set -euo pipefail
-    script_dir="$(dirname "$(readlink -f "$0")")"
-
-    # env for server + clients
-    export PATH="/opt/conda3/bin:${PATH:-}"
-    export PYTHONPATH="${script_dir}/../lib:${PYTHONPATH:-}"
-    export KB_DEPLOYMENT_CONFIG="${script_dir}/../deploy.cfg"
-
-    # use a definite interpreter – sdkpython base has this path
-    exec /opt/conda3/bin/python -u "${script_dir}/../lib/kb_raven/kb_ravenServer.py" "$@"
-    BASH
-	    chmod +x $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
-
-
-
-build-startup-script:
-	mkdir -p $(LBIN_DIR)
-	echo '#!/bin/bash' > $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
-	echo 'script_dir=$$(dirname "$$(readlink -f "$$0")")' >> $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
-	echo 'export KB_DEPLOYMENT_CONFIG=$$script_dir/../deploy.cfg' >> $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
-	echo 'export PYTHONPATH=$$script_dir/../$(LIB_DIR):$$PYTHONPATH' >> $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
-	echo 'uwsgi --master --processes 5 --threads 5 --http :5000 --wsgi-file $$script_dir/../$(LIB_DIR)/$(SERVICE_CAPS)/$(SERVICE_CAPS)Server.py' >> $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
-	chmod +x $(SCRIPTS_DIR)/$(STARTUP_SCRIPT_NAME)
+#!/usr/bin/env bash
+set -euo pipefail
+script_dir="$(dirname "$(readlink -f "$0")")"
+export PATH="/opt/conda3/bin:${PATH:-}"
+export PYTHONPATH="${script_dir}/../lib:${PYTHONPATH:-}"
+export KB_DEPLOYMENT_CONFIG="${script_dir}/../deploy.cfg"
+exec /opt/conda3/bin/python -u "${script_dir}/../lib/$(SERVICE_CAPS)/$(SERVICE_CAPS)Server.py" "$@"
+BASH
+	chmod +x $(LBIN_DIR)/$(EXECUTABLE_SCRIPT_NAME)
 
 build-test-script:
-	echo '#!/bin/bash' > $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'script_dir=$$(dirname "$$(readlink -f "$$0")")' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'export KB_DEPLOYMENT_CONFIG=$$script_dir/../deploy.cfg' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'export KB_AUTH_TOKEN=$$(cat /kb/module/work/token)' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'echo "Removing temp files..."' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'rm -rf $(WORK_DIR)/*' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'echo "...done removing temp files."' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'export PYTHONPATH=$$script_dir/../$(LIB_DIR):$$PYTHONPATH' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'cd $$script_dir/../$(TEST_DIR)' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'nosetests -v --with-coverage --cover-package=$(SERVICE_CAPS) --cover-html --cover-html-dir=/kb/module/work/test_coverage --nocapture --nologcapture .' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
+	mkdir -p $(TEST_DIR)
+	@cat > $(TEST_DIR)/$(TEST_SCRIPT_NAME) <<'BASH'
+#!/usr/bin/env bash
+set -euo pipefail
+script_dir="$(dirname "$(readlink -f "$0")")"
+export KB_DEPLOYMENT_CONFIG="${script_dir}/../deploy.cfg"
+export KB_AUTH_TOKEN="$(cat /kb/module/work/token 2>/dev/null || true)"
+export PYTHONPATH="${script_dir}/../lib:${PYTHONPATH:-}"
+mkdir -p /tmp/test_coverage
+cd "${script_dir}/../$(TEST_DIR)"
+exec nosetests -v --with-coverage --cover-package=$(SERVICE_CAPS) \
+  --cover-html --cover-html-dir=/tmp/test_coverage \
+  --nocapture --nologcapture .
+BASH
 	chmod +x $(TEST_DIR)/$(TEST_SCRIPT_NAME)
+
 
 # IMPORTANT: ensure compile (clients generated) and test script exist before running tests
 test: compile build-test-script
