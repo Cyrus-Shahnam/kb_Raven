@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eo pipefail
-# tolerate unset PYTHONPATH
+export PATH="/opt/conda3/bin:${PATH:-}"
 export PYTHONPATH="/kb/module/lib:${PYTHONPATH:-}"
+
+
 
 cmd="${1:-start}"
 shift || true
