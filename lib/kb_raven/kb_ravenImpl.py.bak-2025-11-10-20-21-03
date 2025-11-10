@@ -33,15 +33,14 @@ class kb_raven:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/Cyrus-Shahnam/kb_Raven.git"
-    GIT_COMMIT_HASH = "f8e093acc5ce3db6b48f3317841e7ec9e3cacd9e"
+    GIT_COMMIT_HASH = "9a7ce84b87cb7b5bfd50e20c73c9a39d2064e789"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
     # be found
-    def __init__(self, config):
-        #BEGIN_CONSTRUCTOR
+    #BEGIN_CONSTRUCTOR
     def __init__(self, config):
         # tolerate missing config (e.g., if KB_DEPLOYMENT_CONFIG isn't set)
         cfg = config or {}
@@ -55,7 +54,8 @@ class kb_raven:
         self.au = AssemblyUtil(self.callback_url)
         self.dfu = DataFileUtil(self.callback_url)
         self.kbr = KBaseReport(self.callback_url)
-        #END_CONSTRUCTOR
+    #END_CONSTRUCTOR
+
         pass
 
 
@@ -77,6 +77,12 @@ class kb_raven:
         """
         # ctx is the context object
         # return variables are: result
+        def run_kb_raven(self, ctx, params):
+        print("[kb_raven] ENTER run_kb_raven()")
+        print("[kb_raven] params keys:", list(params.keys()) if isinstance(params, dict) else type(params))
+        sys.stdout.flush()
+        # ...
+
         #BEGIN run_kb_raven
         ws_name = params['workspace_name']
         reads_refs = params['read_libraries']
