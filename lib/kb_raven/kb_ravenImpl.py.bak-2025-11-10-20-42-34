@@ -33,7 +33,7 @@ class kb_raven:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/Cyrus-Shahnam/kb_Raven.git"
-    GIT_COMMIT_HASH = "8bd892cfbafe3603df1f8f9a9e3261664bf212c1"
+    GIT_COMMIT_HASH = "f8e093acc5ce3db6b48f3317841e7ec9e3cacd9e"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
