@@ -54,12 +54,14 @@ JSON
       --wsgi-file "/kb/module/lib/kb_raven/kb_ravenServer.py"
     ;;
 
-  async)
+    async)
     echo "[entrypoint] mode=async"
     if [ "$#" -gt 0 ]; then
-      exec su -m -s /bin/bash kbmodule -c 'exec ./bin/run_kb_raven_async_job.sh "$@"' -- "$@"
+      echo "[entrypoint] forwarding $#: $*"
+      exec ./bin/run_kb_raven_async_job.sh "$@"
     else
-      exec su -m -s /bin/bash kbmodule -c 'exec ./bin/run_kb_raven_async_job.sh'
+      echo "[entrypoint] no CLI args from NJS; calling wrapper with ZERO args to synthesize from env"
+      exec ./bin/run_kb_raven_async_job.sh
     fi
     ;;
 
