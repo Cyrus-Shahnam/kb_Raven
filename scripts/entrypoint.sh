@@ -1,14 +1,30 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
+
+# Always have Python + lib in path
 export PATH="/opt/conda3/bin:${PATH:-}"
 export PYTHONPATH="/kb/module/lib:${PYTHONPATH:-}"
 
-cmd="${1:-start}"
-shift || true
+echo "[entrypoint] args: $*"
+echo "[entrypoint] SDK_CALLBACK_URL=${SDK_CALLBACK_URL:-<unset>}"
 
-case "$cmd" in
+# Decide mode:
+# - If an explicit command was passed (e.g., 'report', 'async'), use it.
+# - If nothing passed and we're in NJS (SDK_CALLBACK_URL is set), default to 'async'.
+# - Otherwise default to 'start' (service).
+cmd="${1:-}"
+if [[ -z "${cmd}" ]]; then
+  if [[ -n "${SDK_CALLBACK_URL:-}" ]]; then
+    cmd="async"
+  else
+    cmd="start"
+  fi
+fi
+
+case "${cmd}" in
   report)
-    # Catalog compile-report: copy prebuilt JSON if present; else write a minimal fallback.
+    shift || true
+    echo "[entrypoint] mode=report"
     mkdir -p work
     if [[ -f ci/compile_report.json ]]; then
       cp -f ci/compile_report.json work/compile_report.json
@@ -32,14 +48,20 @@ JSON
     ;;
 
   start)
-    exec su -s /bin/bash -c "./scripts/start_server.sh" kbmodule
+    echo "[entrypoint] mode=start (service/uwsgi)"
+    exec uwsgi --master --processes 5 --threads 5 --http :5000 \
+      --wsgi-file "/kb/module/lib/kb_raven/kb_ravenServer.py"
     ;;
 
   async)
+    shift || true
+    echo "[entrypoint] mode=async -> ./bin/run_kb_raven_async_job.sh $*"
+    # run as kbmodule so scratch perms match
     exec su -s /bin/bash -c "./bin/run_kb_raven_async_job.sh $*" kbmodule
     ;;
 
   *)
-    exec "$cmd" "$@"
+    echo "[entrypoint] passthrough: ${cmd} $*"
+    exec "${cmd}" "$@"
     ;;
 esac

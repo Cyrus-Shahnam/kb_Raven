@@ -37,4 +37,5 @@ RUN make build
 
 # Run as root so "report" can write into the mounted ./work
 ENTRYPOINT ["./scripts/entrypoint.sh"]
-CMD []
+CMD ["async"]
+
