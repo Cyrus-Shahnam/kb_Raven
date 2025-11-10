@@ -90,3 +90,11 @@ echo "[async] ls -la /kb/module/work:"; ls -la /kb/module/work || true
 [[ -f /kb/module/work/config.properties ]] && { echo "[async] head -n 40 /kb/module/work/config.properties"; head -n 40 /kb/module/work/config.properties; }
 
 exec /opt/conda3/bin/python -u "${script_dir}/../lib/kb_raven/kb_ravenServer.py" "${args[@]}"
+# ... after you've set cb, tok, jid and built args=("${cb}" "${tok}" "${jid}")
+export SDK_CALLBACK_URL="${cb}"
+export KB_AUTH_TOKEN="${tok}"
+export JOB_ID="${jid}"
+
+echo "[async] exporting env: SDK_CALLBACK_URL=${SDK_CALLBACK_URL} KB_AUTH_TOKEN=<set> JOB_ID=${JOB_ID}"
+echo "[async] invoking kb_ravenServer.py with ${#args[@]} args: ${args[*]@Q}"
+exec /opt/conda3/bin/python -u "${script_dir}/../lib/kb_raven/kb_ravenServer.py" "${args[@]}"

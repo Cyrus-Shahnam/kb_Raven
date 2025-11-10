@@ -3,6 +3,7 @@
 import os
 import subprocess
 import shlex
+import sys, json
 from typing import List
 
 from installed_clients.ReadsUtilsClient import ReadsUtils
@@ -76,6 +77,12 @@ class kb_raven:
         """
         # ctx is the context object
         # return variables are: result
+        def run_kb_raven(self, ctx, params):
+        print("[kb_raven] ENTER run_kb_raven()")
+        print("[kb_raven] params keys:", list(params.keys()) if isinstance(params, dict) else type(params))
+        sys.stdout.flush()
+        # ...
+
         #BEGIN run_kb_raven
         ws_name = params['workspace_name']
         reads_refs = params['read_libraries']
