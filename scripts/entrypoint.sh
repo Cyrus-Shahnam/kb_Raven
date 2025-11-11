@@ -1,62 +1,46 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Modes:
-#   start  -> run uWSGI service (local dev)
-#   async  -> run an async job (NJS)
-#   report -> write compile_report.json for AppDev registration
-#   *      -> exec arbitrary command
 mode="${1:-async}"
+shift || true
 
-case "$mode" in
-  start)
-    export KB_DEPLOYMENT_CONFIG="${KB_DEPLOYMENT_CONFIG:-/kb/module/deploy.cfg}"
-    export PYTHONPATH="/kb/module/lib:${PYTHONPATH:-}"
-    exec uwsgi --master --processes 5 --threads 5 --http :5000 \
-      --wsgi-file /kb/module/lib/kb_raven/kb_ravenServer.py
-    ;;
+export PATH="/opt/conda3/bin:${PATH:-}"
+export PYTHONPATH="/kb/module/lib:${PYTHONPATH:-}"
 
-  async)
-    shift || true
-    export PYTHONPATH="/kb/module/lib:${PYTHONPATH:-}"
-
-    # Prefer EE2 env; fall back to work/ files (SPAdes pattern)
-    cb="${SDK_CALLBACK_URL:-}"
-    tok="${KB_AUTH_TOKEN:-}"
-    jid="${JOB_ID:-}"
-
-    if [[ -z "${cb}" && -f /kb/module/work/config.properties ]]; then
-      cb=$(awk -F'=' '/external_url[[:space:]]*=/{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' /kb/module/work/config.properties || true)
-    fi
-    [[ -z "${tok}" && -f /kb/module/work/token ]] && tok="$(cat /kb/module/work/token || true)"
-    if [[ -z "${jid}" && -f /kb/module/work/input.json ]]; then
-      jid="$(
-        /opt/conda3/bin/python - <<'PY'
-import json,sys
-try:
-    print(json.load(open('/kb/module/work/input.json'))['id'])
-except Exception:
-    sys.exit(0)
-PY
-      )"
-    fi
-
-    exec /opt/conda3/bin/python -u /kb/module/lib/kb_raven/kb_ravenServer.py "${cb:-}" "${tok:-}" "${jid:-}"
-    ;;
-
+echo "[entrypoint] mode=${mode} args_left=[$*]"
+case "${mode}" in
   report)
-    # AppDev runs this to create compile_report.json
     mkdir -p /kb/module/work
-    if [[ -f /kb/module/ci/compile_report.json ]]; then
+    if [ -f /kb/module/ci/compile_report.json ]; then
       cp /kb/module/ci/compile_report.json /kb/module/work/compile_report.json
       echo "Wrote work/compile_report.json from ci/compile_report.json"
     else
-      echo '{"ok":true,"source":"fallback"}' > /kb/module/work/compile_report.json
-      echo "Wrote minimal compile report"
+      printf '{"status":"ok","notes":"stub compile report for AppDev"}\n' > /kb/module/work/compile_report.json
+      echo "Wrote stub work/compile_report.json"
     fi
+    exit 0
     ;;
-
+  async)
+    cb="${1:-${SDK_CALLBACK_URL:-}}"; shift || true
+    tok="${1:-$(cat /kb/module/work/token 2>/dev/null || echo notoken)}"; shift || true
+    jid="${1:-$(/opt/conda3/bin/python - <<'PY' 2>/dev/null || echo nojid
+import json
+try:
+    print(json.load(open("/kb/module/work/input.json")).get("id",""))
+except Exception:
+    pass
+PY
+)}"
+    if [ -z "${cb}" ]; then echo "[async] ERROR: missing SDK_CALLBACK_URL and no CLI cb"; exit 2; fi
+    echo "[async] exec bin/run_kb_raven_async_job.sh '${cb}' '${tok}' '${jid}'"
+    exec /kb/module/bin/run_kb_raven_async_job.sh "${cb}" "${tok}" "${jid}"
+    ;;
+  server)
+    exec /opt/conda3/bin/uwsgi --master --processes 5 --threads 5 --http :5000 \
+      --wsgi-file /kb/module/lib/kb_raven/kb_ravenServer.py
+    ;;
   *)
-    exec "$@"
+    echo "[entrypoint] unknown mode '${mode}' → fallback to async"
+    exec "$0" async "$@"
     ;;
 esac
